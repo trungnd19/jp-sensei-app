@@ -1,0 +1,97 @@
+{
+  "type": "object",
+  "properties": {
+    "original": {
+      "type": "string",
+      "description": "The original Japanese sentence"
+    },
+    "furigana": {
+      "type": "string",
+      "description": "The sentence with furigana readings in brackets, e.g. 食[た]べる"
+    },
+    "vocabulary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "word": {
+            "type": "string",
+            "description": "The Japanese word"
+          },
+          "reading": {
+            "type": "string",
+            "description": "Hiragana reading"
+          },
+          "meaning": {
+            "type": "string",
+            "description": "Vietnamese meaning"
+          },
+          "nuance": {
+            "type": "string",
+            "description": "Usage nuance or context in Vietnamese"
+          },
+          "jlpt": {
+            "type": "string",
+            "description": "JLPT level (N5-N1) if known, empty string if unknown"
+          }
+        },
+        "required": ["word", "reading", "meaning"]
+      }
+    },
+    "grammar": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "The grammar pattern"
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Explanation in Vietnamese"
+          },
+          "why_used": {
+            "type": "string",
+            "description": "Why this grammar is used in this context"
+          },
+          "common_mistake": {
+            "type": "string",
+            "description": "Common mistakes learners make"
+          },
+          "similar": {
+            "type": "string",
+            "description": "Similar grammar patterns for comparison"
+          }
+        },
+        "required": ["pattern", "explanation", "why_used"]
+      }
+    },
+    "translation": {
+      "type": "string",
+      "description": "Natural Vietnamese translation"
+    },
+    "nuance": {
+      "type": "string",
+      "description": "Writing style explanation (formal, casual, news, etc.) in Vietnamese"
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "japanese": {
+            "type": "string",
+            "description": "Example sentence in Japanese"
+          },
+          "vietnamese": {
+            "type": "string",
+            "description": "Vietnamese translation of the example"
+          }
+        },
+        "required": ["japanese", "vietnamese"]
+      }
+    }
+  },
+  "required": ["original", "furigana", "vocabulary", "grammar", "translation", "nuance", "examples"]
+}
