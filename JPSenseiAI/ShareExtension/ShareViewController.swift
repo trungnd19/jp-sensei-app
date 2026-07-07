@@ -8,9 +8,10 @@ class ShareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let sharedText = extractSharedText()
         let hostingView = UIHostingController(rootView: ShareExtensionView(
-            inputText: sharedText,
+            textProvider: { [weak self] in
+                await self?.extractSharedText()
+            },
             onDismiss: { [weak self] in
                 self?.dismissExtension()
             }
@@ -30,7 +31,8 @@ class ShareViewController: UIViewController {
         hostingView.didMove(toParent: self)
     }
 
-    private func extractSharedText() -> String? {
+    /// Extract shared text using async/await — no deadlock risk
+    private func extractSharedText() async -> String? {
         guard let items = extensionContext?.inputItems as? [NSExtensionItem] else {
             return nil
         }
@@ -39,19 +41,13 @@ class ShareViewController: UIViewController {
             guard let attachments = item.attachments else { continue }
             for provider in attachments {
                 if provider.hasItemConformingToTypeIdentifier("public.plain-text") {
-                    let semaphore = DispatchSemaphore(value: 0)
-                    var result: String?
-
-                    provider.loadItem(forTypeIdentifier: "public.plain-text", options: nil) { data, _ in
-                        if let text = data as? String {
-                            result = text
+                    do {
+                        let data = try await provider.loadItem(forTypeIdentifier: "public.plain-text")
+                        if let text = data as? String, !text.isEmpty {
+                            return text
                         }
-                        semaphore.signal()
-                    }
-
-                    semaphore.wait()
-                    if let text = result, !text.isEmpty {
-                        return text
+                    } catch {
+                        continue
                     }
                 }
             }

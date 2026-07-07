@@ -2,10 +2,11 @@ import SwiftUI
 
 /// Main view for the Share Extension - manages state and navigation
 struct ShareExtensionView: View {
-    let inputText: String?
+    let textProvider: () async -> String?
     let onDismiss: () -> Void
 
     @StateObject private var viewModel = ResultViewModel()
+    @State private var inputText: String?
 
     var body: some View {
         NavigationStack {
@@ -17,8 +18,8 @@ struct ShareExtensionView: View {
                     LoadingView()
                 case .success(let response):
                     ResultView(response: response)
-                case .error(let message):
-                    ErrorView(message: message, onRetry: {
+                case .error(let errorInfo):
+                    ErrorView(errorInfo: errorInfo, onRetry: {
                         if let text = inputText {
                             viewModel.analyze(text: text)
                         }
@@ -37,7 +38,9 @@ struct ShareExtensionView: View {
             }
         }
         .task {
-            guard let text = inputText, !text.isEmpty else {
+            let text = await textProvider()
+            inputText = text
+            guard let text, !text.isEmpty else {
                 viewModel.state = .empty
                 return
             }

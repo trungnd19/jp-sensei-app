@@ -3,39 +3,49 @@ import SwiftUI
 struct APIKeySettingsView: View {
     @StateObject private var storage = SharedStorage.shared
     @State private var apiKey: String = ""
-    @State private var showKey = false
     @State private var saved = false
+    @State private var validationError: String?
+
+    private var currentProvider: AIProvider {
+        storage.getProvider()
+    }
 
     var body: some View {
         Form {
-            Section {
-                HStack {
-                    if showKey {
-                        TextField("Paste API Key here", text: $apiKey)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                    } else {
-                        SecureField("Paste API Key here", text: $apiKey)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                    }
-
-                    Button {
-                        showKey.toggle()
-                    } label: {
-                        Image(systemName: showKey ? "eye.slash" : "eye")
+            // Show existing key status (masked, never reveal full key)
+            if storage.hasAPIKey {
+                Section("Current Key") {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                        Text(maskedKey)
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundStyle(.secondary)
                     }
                 }
+            }
+
+            Section {
+                SecureField("Paste new API Key", text: $apiKey)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+
+                if let error = validationError {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
             } header: {
-                Text("Google Gemini API Key")
+                Text(storage.hasAPIKey ? "Replace Key" : "Enter API Key")
             } footer: {
-                Text("Get your free API key at aistudio.google.com/apikey")
+                Text(currentProvider == .gemini
+                     ? "Get your free key at aistudio.google.com/apikey"
+                     : "Get your key at platform.openai.com/api-keys")
             }
 
             Section {
                 Button("Save") {
-                    storage.saveAPIKey(apiKey)
-                    saved = true
+                    saveKey()
                 }
                 .disabled(apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
@@ -44,13 +54,15 @@ struct APIKeySettingsView: View {
                         storage.deleteAPIKey()
                         apiKey = ""
                         saved = false
+                        validationError = nil
                     }
                 }
             }
         }
         .navigationTitle("API Key")
-        .onAppear {
-            apiKey = storage.getAPIKey() ?? ""
+        .onDisappear {
+            // Clear key from memory when leaving screen
+            apiKey = ""
         }
         .overlay {
             if saved {
@@ -62,6 +74,39 @@ struct APIKeySettingsView: View {
                     }
             }
         }
+    }
+
+    /// Validate key format before saving
+    private func saveKey() {
+        let trimmed = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        validationError = nil
+
+        // Basic format validation
+        switch currentProvider {
+        case .gemini:
+            if !trimmed.hasPrefix("AIza") {
+                validationError = "Gemini key thường bắt đầu bằng 'AIza...'. Kiểm tra lại?"
+                // Still allow saving — just a warning, not blocking
+            }
+        case .openai:
+            if !trimmed.hasPrefix("sk-") {
+                validationError = "OpenAI key thường bắt đầu bằng 'sk-...'. Kiểm tra lại?"
+            }
+        }
+
+        storage.saveAPIKey(trimmed)
+        apiKey = ""  // Clear from memory immediately after save
+        saved = true
+    }
+
+    /// Show masked version: first 4 chars + dots + last 4 chars
+    private var maskedKey: String {
+        guard let key = storage.getAPIKey(), key.count > 8 else {
+            return "••••••••"
+        }
+        let prefix = String(key.prefix(4))
+        let suffix = String(key.suffix(4))
+        return "\(prefix)••••••••\(suffix)"
     }
 }
 
@@ -76,6 +121,12 @@ private struct SavedToast: View {
                 .background(.ultraThinMaterial, in: Capsule())
                 .padding(.bottom, 32)
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        APIKeySettingsView()
     }
 }
 

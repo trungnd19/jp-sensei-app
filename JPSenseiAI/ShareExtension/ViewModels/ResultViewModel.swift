@@ -8,12 +8,20 @@ final class ResultViewModel: ObservableObject {
         case empty
         case loading
         case success(AIResponse)
-        case error(String)
+        case error(ErrorInfo)
+    }
+
+    struct ErrorInfo {
+        let message: String
+        let icon: String
+        let isRetryable: Bool
     }
 
     @Published var state: ViewState = .loading
 
     private let storage = SharedStorage.shared
+    private var retryCount = 0
+    private static let maxRetries = 3
 
     func analyze(text: String) {
         state = .loading
@@ -36,11 +44,22 @@ final class ResultViewModel: ObservableObject {
                     apiKey: apiKey
                 )
 
+                retryCount = 0
                 state = .success(response)
             } catch let error as AIServiceError {
-                state = .error(error.errorDescription ?? "Unknown error")
+                retryCount += 1
+                state = .error(ErrorInfo(
+                    message: error.errorDescription ?? "Unknown error",
+                    icon: error.iconName,
+                    isRetryable: error.isRetryable && retryCount < Self.maxRetries
+                ))
             } catch {
-                state = .error("Lỗi không xác định: \(error.localizedDescription)")
+                retryCount += 1
+                state = .error(ErrorInfo(
+                    message: "Lỗi không xác định: \(error.localizedDescription)",
+                    icon: "questionmark.circle",
+                    isRetryable: retryCount < Self.maxRetries
+                ))
             }
         }
     }

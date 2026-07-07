@@ -23,13 +23,28 @@ final class GeminiService: AIServiceProtocol {
         request.httpBody = try JSONEncoder().encode(requestBody)
         request.timeoutInterval = 30
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let data: Data
+        let response: URLResponse
+
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch let error as URLError {
+            throw Self.mapURLError(error)
+        }
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw AIServiceError.invalidResponse
         }
 
-        guard httpResponse.statusCode == 200 else {
+        // Handle specific HTTP status codes
+        switch httpResponse.statusCode {
+        case 200:
+            break
+        case 429:
+            throw AIServiceError.rateLimited
+        case 401, 403:
+            throw AIServiceError.apiError("API Key không hợp lệ hoặc đã hết hạn.")
+        default:
             let errorBody = String(data: data, encoding: .utf8) ?? "Unknown error"
             throw AIServiceError.apiError("HTTP \(httpResponse.statusCode): \(errorBody)")
         }
@@ -50,6 +65,18 @@ final class GeminiService: AIServiceProtocol {
             return aiResponse
         } catch {
             throw AIServiceError.decodingError(error.localizedDescription)
+        }
+    }
+
+    /// Map URLError to specific AIServiceError
+    private static func mapURLError(_ error: URLError) -> AIServiceError {
+        switch error.code {
+        case .timedOut:
+            return .timeout
+        case .notConnectedToInternet, .networkConnectionLost, .dataNotAllowed:
+            return .noInternet
+        default:
+            return .networkError(error)
         }
     }
 }
