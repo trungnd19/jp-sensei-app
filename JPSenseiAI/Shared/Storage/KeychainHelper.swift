@@ -7,8 +7,9 @@ final class KeychainHelper {
     static let shared = KeychainHelper()
     private init() {}
 
-    func save(_ data: String, forKey key: String) {
-        guard let data = data.data(using: .utf8) else { return }
+    @discardableResult
+    func save(_ data: String, forKey key: String) -> Bool {
+        guard let data = data.data(using: .utf8) else { return false }
 
         // Delete existing item first
         delete(forKey: key)
@@ -21,7 +22,8 @@ final class KeychainHelper {
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
         ]
 
-        SecItemAdd(query as CFDictionary, nil)
+        let status = SecItemAdd(query as CFDictionary, nil)
+        return status == errSecSuccess
     }
 
     func read(forKey key: String) -> String? {

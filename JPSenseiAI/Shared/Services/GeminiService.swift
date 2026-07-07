@@ -4,7 +4,9 @@ import Foundation
 final class GeminiService: AIServiceProtocol {
 
     func analyze(text: String, systemPrompt: String, model: String, apiKey: String) async throws -> AIResponse {
-        let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent?key=\(apiKey)")!
+        guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent?key=\(apiKey)") else {
+            throw AIServiceError.apiError("Invalid URL — kiểm tra API key có chứa ký tự đặc biệt không.")
+        }
 
         let requestBody = GeminiRequest(
             systemInstruction: GeminiContent(parts: [GeminiPart(text: systemPrompt)]),

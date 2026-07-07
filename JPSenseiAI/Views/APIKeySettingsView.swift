@@ -67,10 +67,9 @@ struct APIKeySettingsView: View {
         .overlay {
             if saved {
                 SavedToast()
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            saved = false
-                        }
+                    .task {
+                        try? await Task.sleep(for: .seconds(1.5))
+                        saved = false
                     }
             }
         }

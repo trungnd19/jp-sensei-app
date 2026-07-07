@@ -21,13 +21,21 @@ final class ResultViewModel: ObservableObject {
 
     private let storage = SharedStorage.shared
     private var retryCount = 0
+    private var currentTask: Task<Void, Never>?
     private static let maxRetries = 3
 
+    deinit {
+        currentTask?.cancel()
+    }
+
     func analyze(text: String) {
+        currentTask?.cancel()
         state = .loading
 
-        Task {
+        currentTask = Task {
             do {
+                guard !Task.isCancelled else { return }
+
                 guard let apiKey = storage.getAPIKey(), !apiKey.isEmpty else {
                     throw AIServiceError.noAPIKey
                 }
@@ -44,8 +52,13 @@ final class ResultViewModel: ObservableObject {
                     apiKey: apiKey
                 )
 
+                guard !Task.isCancelled else { return }
+
                 retryCount = 0
                 state = .success(response)
+            } catch is CancellationError {
+                // Task was cancelled (user retried), ignore
+                return
             } catch let error as AIServiceError {
                 retryCount += 1
                 state = .error(ErrorInfo(

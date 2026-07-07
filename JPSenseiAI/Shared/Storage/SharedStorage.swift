@@ -17,13 +17,15 @@ final class SharedStorage: ObservableObject {
 
     // MARK: - API Key (Keychain)
 
-    func saveAPIKey(_ key: String) {
+    @discardableResult
+    func saveAPIKey(_ key: String) -> Bool {
         let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        keychain.save(trimmed, forKey: Constants.StorageKeys.apiKey)
+        guard !trimmed.isEmpty else { return false }
+        let success = keychain.save(trimmed, forKey: Constants.StorageKeys.apiKey)
         DispatchQueue.main.async {
-            self.hasAPIKey = true
+            self.hasAPIKey = success
         }
+        return success
     }
 
     func getAPIKey() -> String? {

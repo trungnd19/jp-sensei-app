@@ -4,7 +4,9 @@ import Foundation
 final class OpenAIService: AIServiceProtocol {
 
     func analyze(text: String, systemPrompt: String, model: String, apiKey: String) async throws -> AIResponse {
-        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+        guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
+            throw AIServiceError.apiError("Invalid OpenAI URL")
+        }
 
         let requestBody = OpenAIRequest(
             model: model,

@@ -46,10 +46,9 @@ struct PromptSettingsView: View {
                         .background(.ultraThinMaterial, in: Capsule())
                         .padding(.bottom, 32)
                 }
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        saved = false
-                    }
+                .task {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    saved = false
                 }
             }
         }
