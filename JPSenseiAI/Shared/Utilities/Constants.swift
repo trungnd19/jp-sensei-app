@@ -2,7 +2,6 @@ import Foundation
 
 enum Constants {
     static let appGroupID = "group.com.jpsensei.shared"
-    static let keychainGroup = "com.jpsensei.shared"
 
     enum StorageKeys {
         static let apiKey = "api_key"

@@ -22,6 +22,18 @@ struct GrammarCard: View {
                 }
             }
 
+            if let example = item.example {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(example.japanese)
+                        .font(.caption)
+                        .foregroundStyle(.primary.opacity(0.8))
+                    Text(example.vietnamese)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.top, 2)
+            }
+
             if let mistake = item.commonMistake, !mistake.isEmpty {
                 HStack(alignment: .top, spacing: 6) {
                     Image(systemName: "exclamationmark.triangle")
@@ -55,6 +67,7 @@ struct GrammarCard: View {
         pattern: "〜ですね",
         explanation: "Dùng để xác nhận hoặc chia sẻ cảm nhận với người nghe",
         whyUsed: "Người nói muốn tạo sự đồng cảm về thời tiết",
+        example: ExampleItem(japanese: "いい天気ですね。", vietnamese: "Thời tiết đẹp nhỉ."),
         commonMistake: "Nhầm với ですか (câu hỏi)",
         similar: "〜ですよ (thông báo thông tin mới)"
     ))

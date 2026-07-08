@@ -3,12 +3,9 @@ import Foundation
 /// AI response model matching the JSON schema
 struct AIResponse: Codable {
     let original: String
-    let furigana: String
     let vocabulary: [VocabularyItem]
     let grammar: [GrammarItem]
     let translation: String
-    let nuance: String
-    let examples: [ExampleItem]
 }
 
 struct VocabularyItem: Codable, Identifiable {
@@ -16,8 +13,7 @@ struct VocabularyItem: Codable, Identifiable {
     let word: String
     let reading: String
     let meaning: String
-    let nuance: String?
-    let jlpt: String?
+    let example: ExampleItem?
 }
 
 struct GrammarItem: Codable, Identifiable {
@@ -25,11 +21,12 @@ struct GrammarItem: Codable, Identifiable {
     let pattern: String
     let explanation: String
     let whyUsed: String
+    let example: ExampleItem?
     let commonMistake: String?
     let similar: String?
 
     enum CodingKeys: String, CodingKey {
-        case pattern, explanation
+        case pattern, explanation, example
         case whyUsed = "why_used"
         case commonMistake = "common_mistake"
         case similar

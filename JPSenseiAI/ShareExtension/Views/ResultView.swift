@@ -13,12 +13,10 @@ struct ResultView: View {
                         .font(.title3)
                 }
 
-                // Furigana
-                if !response.furigana.isEmpty {
-                    SectionCard(title: "Furigana", systemImage: "textformat.abc") {
-                        Text(response.furigana)
-                            .font(.body)
-                    }
+                // Translation
+                SectionCard(title: "Translation", systemImage: "globe") {
+                    Text(response.translation)
+                        .font(.body)
                 }
 
                 // Vocabulary
@@ -38,41 +36,6 @@ struct ResultView: View {
                         VStack(spacing: 10) {
                             ForEach(response.grammar) { item in
                                 GrammarCard(item: item)
-                            }
-                        }
-                    }
-                }
-
-                // Translation
-                SectionCard(title: "Translation", systemImage: "globe") {
-                    Text(response.translation)
-                        .font(.body)
-                }
-
-                // Nuance
-                if !response.nuance.isEmpty {
-                    SectionCard(title: "Nuance", systemImage: "lightbulb") {
-                        Text(response.nuance)
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                // Examples
-                if !response.examples.isEmpty {
-                    SectionCard(title: "Examples", systemImage: "text.badge.plus") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            ForEach(response.examples) { example in
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(example.japanese)
-                                        .font(.body)
-                                    Text(example.vietnamese)
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                }
-                                if example.id != response.examples.last?.id {
-                                    Divider()
-                                }
                             }
                         }
                     }

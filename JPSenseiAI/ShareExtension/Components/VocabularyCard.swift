@@ -12,26 +12,21 @@ struct VocabularyCard: View {
                 Text(item.reading)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-
-                Spacer()
-
-                if let jlpt = item.jlpt, !jlpt.isEmpty {
-                    Text(jlpt)
-                        .font(.caption2.weight(.medium))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.indigo.opacity(0.1))
-                        .clipShape(Capsule())
-                }
             }
 
             Text(item.meaning)
                 .font(.subheadline)
 
-            if let nuance = item.nuance, !nuance.isEmpty {
-                Text(nuance)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            if let example = item.example {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(example.japanese)
+                        .font(.caption)
+                        .foregroundStyle(.primary.opacity(0.8))
+                    Text(example.vietnamese)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.top, 4)
             }
         }
         .padding(10)
@@ -45,8 +40,7 @@ struct VocabularyCard: View {
         word: "天気",
         reading: "てんき",
         meaning: "Thời tiết",
-        nuance: "Dùng trong cả văn nói và văn viết",
-        jlpt: "N5"
+        example: ExampleItem(japanese: "今日の天気はいいですね。", vietnamese: "Thời tiết hôm nay đẹp nhỉ.")
     ))
     .padding()
 }
