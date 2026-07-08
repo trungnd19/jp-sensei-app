@@ -49,19 +49,13 @@ struct ResultView: View {
 #Preview {
     ResultView(response: AIResponse(
         original: "今日は天気がいいですね。",
-        furigana: "今日[きょう]は天気[てんき]がいいですね。",
         vocabulary: [
-            VocabularyItem(word: "今日", reading: "きょう", meaning: "Hôm nay", nuance: "Dùng trong cả văn nói và văn viết", jlpt: "N5"),
-            VocabularyItem(word: "天気", reading: "てんき", meaning: "Thời tiết", nuance: nil, jlpt: "N5")
+            VocabularyItem(word: "今日", reading: "きょう", meaning: "Hôm nay", example: ExampleItem(japanese: "今日は暑いです。", vietnamese: "Hôm nay nóng.")),
+            VocabularyItem(word: "天気", reading: "てんき", meaning: "Thời tiết", example: nil)
         ],
         grammar: [
-            GrammarItem(pattern: "〜ですね", explanation: "Dùng để xác nhận hoặc chia sẻ cảm nhận", whyUsed: "Người nói muốn đồng cảm với người nghe về thời tiết", commonMistake: "Nhầm với ですか (câu hỏi)", similar: "〜ですよ (thông báo)")
+            GrammarItem(pattern: "〜ですね", explanation: "Dùng để xác nhận hoặc chia sẻ cảm nhận", whyUsed: "Người nói muốn đồng cảm với người nghe về thời tiết", example: ExampleItem(japanese: "この本は面白いですね。", vietnamese: "Cuốn sách này hay nhỉ."), commonMistake: "Nhầm với ですか (câu hỏi)", similar: "〜ですよ (thông báo)")
         ],
-        translation: "Hôm nay thời tiết đẹp nhỉ.",
-        nuance: "Câu giao tiếp nhẹ nhàng, thường dùng khi chào hỏi. Phong cách lịch sự (です/ます).",
-        examples: [
-            ExampleItem(japanese: "この本は面白いですね。", vietnamese: "Cuốn sách này hay nhỉ."),
-            ExampleItem(japanese: "日本語は難しいですね。", vietnamese: "Tiếng Nhật khó nhỉ.")
-        ]
+        translation: "Hôm nay thời tiết đẹp nhỉ."
     ))
 }
