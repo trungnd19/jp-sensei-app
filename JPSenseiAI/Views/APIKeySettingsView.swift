@@ -83,8 +83,8 @@ struct APIKeySettingsView: View {
         // Basic format validation
         switch currentProvider {
         case .gemini:
-            if !trimmed.hasPrefix("AIza") {
-                validationError = "Gemini key thường bắt đầu bằng 'AIza...'. Kiểm tra lại?"
+            if !trimmed.count < 20 {
+                validationError = "API key quá ngắn. Kiểm tra lại?"
                 // Still allow saving — just a warning, not blocking
             }
         case .openai:
@@ -95,6 +95,7 @@ struct APIKeySettingsView: View {
 
         storage.saveAPIKey(trimmed)
         apiKey = ""  // Clear from memory immediately after save
+        validationError = nil
         saved = true
     }
 
