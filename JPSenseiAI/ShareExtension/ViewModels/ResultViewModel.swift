@@ -44,8 +44,6 @@ final class ResultViewModel: ObservableObject {
                 let model = storage.getModel()
                 let prompt = PromptBuilder.buildSystemPrompt(customPrompt: storage.getPrompt())
 
-                print("[Analyze] Provider: \(provider), Model: \(model), Key prefix: \(apiKey.prefix(8))...")
-
                 let service = AIServiceFactory.create(for: provider)
                 let response = try await service.analyze(
                     text: text,

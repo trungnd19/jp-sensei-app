@@ -5,6 +5,10 @@
       "type": "string",
       "description": "The original Japanese sentence"
     },
+    "furigana": {
+      "type": "string",
+      "description": "The sentence with furigana readings in brackets, e.g. 食[た]べる"
+    },
     "vocabulary": {
       "type": "array",
       "items": {
@@ -16,25 +20,19 @@
           },
           "reading": {
             "type": "string",
-            "description": "Furigana/hiragana reading"
+            "description": "Hiragana reading"
           },
           "meaning": {
             "type": "string",
             "description": "Vietnamese meaning"
           },
-          "example": {
-            "type": "object",
-            "properties": {
-              "japanese": {
-                "type": "string",
-                "description": "Example sentence using this word"
-              },
-              "vietnamese": {
-                "type": "string",
-                "description": "Vietnamese translation of the example"
-              }
-            },
-            "required": ["japanese", "vietnamese"]
+          "nuance": {
+            "type": "string",
+            "description": "Usage nuance or context in Vietnamese"
+          },
+          "jlpt": {
+            "type": "string",
+            "description": "JLPT level (N5-N1) if known, empty string if unknown"
           }
         },
         "required": ["word", "reading", "meaning"]
@@ -57,20 +55,6 @@
             "type": "string",
             "description": "Why this grammar is used in this context"
           },
-          "example": {
-            "type": "object",
-            "properties": {
-              "japanese": {
-                "type": "string",
-                "description": "Example sentence using this grammar"
-              },
-              "vietnamese": {
-                "type": "string",
-                "description": "Vietnamese translation of the example"
-              }
-            },
-            "required": ["japanese", "vietnamese"]
-          },
           "common_mistake": {
             "type": "string",
             "description": "Common mistakes learners make"
@@ -86,7 +70,28 @@
     "translation": {
       "type": "string",
       "description": "Natural Vietnamese translation"
+    },
+    "nuance": {
+      "type": "string",
+      "description": "Writing style explanation (formal, casual, news, etc.) in Vietnamese"
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "japanese": {
+            "type": "string",
+            "description": "Example sentence in Japanese"
+          },
+          "vietnamese": {
+            "type": "string",
+            "description": "Vietnamese translation of the example"
+          }
+        },
+        "required": ["japanese", "vietnamese"]
+      }
     }
   },
-  "required": ["original", "vocabulary", "grammar", "translation"]
+  "required": ["original", "furigana", "vocabulary", "grammar", "translation", "nuance", "examples"]
 }

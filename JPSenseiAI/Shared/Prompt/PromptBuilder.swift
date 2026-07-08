@@ -43,15 +43,14 @@ enum PromptBuilder {
     The JSON must match this exact structure:
     {
       "original": "original Japanese text",
+      "furigana": "text with furigana in brackets like 食[た]べる",
       "vocabulary": [
         {
           "word": "Japanese word",
-          "reading": "furigana/hiragana reading",
+          "reading": "hiragana reading",
           "meaning": "Vietnamese meaning",
-          "example": {
-            "japanese": "example sentence using this word",
-            "vietnamese": "Vietnamese translation"
-          }
+          "nuance": "usage note in Vietnamese (optional)",
+          "jlpt": "N5-N1 or empty string"
         }
       ],
       "grammar": [
@@ -59,15 +58,18 @@ enum PromptBuilder {
           "pattern": "grammar pattern",
           "explanation": "explanation in Vietnamese",
           "why_used": "why used here in Vietnamese",
-          "example": {
-            "japanese": "example sentence using this grammar",
-            "vietnamese": "Vietnamese translation"
-          },
           "common_mistake": "common mistake (optional)",
           "similar": "similar grammar (optional)"
         }
       ],
-      "translation": "natural Vietnamese translation"
+      "translation": "natural Vietnamese translation",
+      "nuance": "writing style explanation in Vietnamese",
+      "examples": [
+        {
+          "japanese": "example sentence",
+          "vietnamese": "Vietnamese translation"
+        }
+      ]
     }
     """
 
