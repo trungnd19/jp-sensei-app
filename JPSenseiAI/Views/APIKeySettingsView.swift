@@ -1,15 +1,15 @@
 import SwiftUI
-
+ 
 struct APIKeySettingsView: View {
     @StateObject private var storage = SharedStorage.shared
     @State private var apiKey: String = ""
     @State private var saved = false
     @State private var validationError: String?
-
+ 
     private var currentProvider: AIProvider {
         storage.getProvider()
     }
-
+ 
     var body: some View {
         Form {
             // Show existing key status (masked, never reveal full key)
@@ -24,12 +24,12 @@ struct APIKeySettingsView: View {
                     }
                 }
             }
-
+ 
             Section {
                 SecureField("Paste new API Key", text: $apiKey)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
-
+ 
                 if let error = validationError {
                     Text(error)
                         .font(.caption)
@@ -42,13 +42,13 @@ struct APIKeySettingsView: View {
                      ? "Get your free key at aistudio.google.com/apikey"
                      : "Get your key at platform.openai.com/api-keys")
             }
-
+ 
             Section {
                 Button("Save") {
                     saveKey()
                 }
                 .disabled(apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
+ 
                 if storage.hasAPIKey {
                     Button("Delete Key", role: .destructive) {
                         storage.deleteAPIKey()
@@ -74,31 +74,34 @@ struct APIKeySettingsView: View {
             }
         }
     }
-
+ 
     /// Validate key format before saving
     private func saveKey() {
         let trimmed = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
         validationError = nil
-
+ 
         // Basic format validation
         switch currentProvider {
         case .gemini:
-            if !trimmed.count < 20 {
+            if trimmed.count < 30 {
                 validationError = "API key quá ngắn. Kiểm tra lại?"
-                // Still allow saving — just a warning, not blocking
             }
         case .openai:
             if !trimmed.hasPrefix("sk-") {
                 validationError = "OpenAI key thường bắt đầu bằng 'sk-...'. Kiểm tra lại?"
             }
         }
-
-        storage.saveAPIKey(trimmed)
-        apiKey = ""  // Clear from memory immediately after save
-        validationError = nil
-        saved = true
+ 
+        let success = storage.saveAPIKey(trimmed)
+        if success {
+            apiKey = ""  // Clear from memory immediately after save
+            validationError = nil
+            saved = true
+        } else {
+            validationError = "Không thể lưu API key. Kiểm tra cài đặt Keychain."
+        }
     }
-
+ 
     /// Show masked version: first 4 chars + dots + last 4 chars
     private var maskedKey: String {
         guard let key = storage.getAPIKey(), key.count > 8 else {
@@ -109,7 +112,7 @@ struct APIKeySettingsView: View {
         return "\(prefix)••••••••\(suffix)"
     }
 }
-
+ 
 private struct SavedToast: View {
     var body: some View {
         VStack {
@@ -123,13 +126,13 @@ private struct SavedToast: View {
         }
     }
 }
-
+ 
 #Preview {
     NavigationStack {
         APIKeySettingsView()
     }
 }
-
+ 
 #Preview {
     NavigationStack {
         APIKeySettingsView()
