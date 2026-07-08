@@ -15,14 +15,14 @@ enum AIProvider: String, Codable, CaseIterable, Identifiable {
 
     var defaultModel: String {
         switch self {
-        case .gemini: "gemini-2.0-flash"
+        case .gemini: "gemini-2.5-flash"
         case .openai: "gpt-4o-mini"
         }
     }
 
     var availableModels: [String] {
         switch self {
-        case .gemini: ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash"]
+        case .gemini: ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.5-flash"]
         case .openai: ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini"]
         }
     }
